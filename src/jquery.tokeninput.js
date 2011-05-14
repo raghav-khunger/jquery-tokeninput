@@ -56,6 +56,7 @@ var POSITION = {
 // Keys "enum"
 var KEY = {
     BACKSPACE: 8,
+    DEL: 46,
     TAB: 9,
     ENTER: 13,
     ESCAPE: 27,
@@ -181,17 +182,20 @@ $.TokenList = function (input, url_or_data, settings) {
 
                         if(event.keyCode === KEY.DOWN) {
                             dropdown_item = $(selected_dropdown_item).next();
-                        } else if (event.keyCode == KEY.UP) {
+                        } else if(event.keyCode === KEY.UP) {
                             dropdown_item = $(selected_dropdown_item).prev();
                         }
 
-                        if(dropdown_item.length) {
-                            select_dropdown_item(dropdown_item);
+                        if(dropdown_item) {
+                            if(dropdown_item.length) {
+                                select_dropdown_item(dropdown_item);
+                            }
+                            return false;
                         }
-                        return false;
                     }
                     break;
 
+                case KEY.DEL:
                 case KEY.BACKSPACE:
                     previous_token = input_token.prev();
 
