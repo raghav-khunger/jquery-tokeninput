@@ -59,6 +59,7 @@ var KEY = {
     DEL: 46,
     TAB: 9,
     ENTER: 13,
+    SHIFT: 16,
     ESCAPE: 27,
     SPACE: 32,
     PAGE_UP: 33,
@@ -155,6 +156,8 @@ $.TokenList = function (input, url_or_data, settings) {
             var next_token;
 
             switch(event.keyCode) {
+                case KEY.SHIFT:
+                case KEY.TAB:
                 case KEY.LEFT:
                 case KEY.RIGHT:
                 case KEY.UP:
@@ -180,9 +183,9 @@ $.TokenList = function (input, url_or_data, settings) {
                     } else {
                         var dropdown_item = null;
 
-                        if(event.keyCode === KEY.DOWN) {
+                        if(event.keyCode === KEY.DOWN || event.keyCode === KEY.TAB && !event.shiftKey) {
                             dropdown_item = $(selected_dropdown_item).next();
-                        } else if(event.keyCode === KEY.UP) {
+                        } else if(event.keyCode === KEY.UP || (event.keyCode === KEY.TAB && event.shiftKey)) {
                             dropdown_item = $(selected_dropdown_item).prev();
                         }
 
@@ -215,7 +218,6 @@ $.TokenList = function (input, url_or_data, settings) {
                     }
                     break;
 
-                case KEY.TAB:
                 case KEY.ENTER:
                 case KEY.NUMPAD_ENTER:
                 case KEY.COMMA:
