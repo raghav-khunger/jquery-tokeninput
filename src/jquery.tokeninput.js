@@ -179,9 +179,9 @@ $.TokenList = function (input, url_or_data, settings) {
                     } else {
                         var dropdown_item = null;
 
-                        if(event.keyCode === KEY.DOWN || event.keyCode === KEY.RIGHT) {
+                        if(event.keyCode === KEY.DOWN) {
                             dropdown_item = $(selected_dropdown_item).next();
-                        } else {
+                        } else if (event.keyCode == KEY.UP) {
                             dropdown_item = $(selected_dropdown_item).prev();
                         }
 
