@@ -526,11 +526,17 @@ $.TokenList = function (input, url_or_data, settings) {
     }
 
     function show_dropdown() {
-        dropdown
-            .css({
+        var top = $(token_list).offset().top + $(token_list).outerHeight();
+        var left = $(token_list).offset().left;
+
+        if(settings.relativeDropdown) {
+            top = $(input_box).parent().offset().top + $(input_box).parent().outerHeight();
+            left = $(input_box).parent().offset().left;
+        }
+        dropdown.css({
                 position: "absolute",
-                top: $(token_list).offset().top + $(token_list).outerHeight(),
-                left: $(token_list).offset().left,
+                top: top,
+                left: left,
                 zindex: 999
             })
             .show();
