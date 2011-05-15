@@ -27,9 +27,10 @@ var DEFAULT_SETTINGS = {
     prePopulate: null,
     processPrePopulate: false,
     animateDropdown: true,
+    tabIndexStart: 0,
     onResult: null,
     onAdd: null,
-    onDelete: null
+    onDelete: null,
 };
 
 // Default classes to use when theming
@@ -130,6 +131,9 @@ $.TokenList = function (input, url_or_data, settings) {
     // Keep track of the number of tokens in the list
     var token_count = 0;
 
+    // Keep track of tabindices in use
+    var tabindices = []
+
     // Basic cache to save on db hits
     var cache = new $.TokenList.Cache();
 
@@ -138,7 +142,7 @@ $.TokenList = function (input, url_or_data, settings) {
     var input_val;
 
     // Create a new text input an attach keyup events
-    var input_box = $("<input type=\"text\"  autocomplete=\"off\">")
+    var input_box = $("<input type=\"text\"  autocomplete=\"off\" tabindex=\"0\">")
         .css({
             outline: "none"
         })
@@ -322,7 +326,7 @@ $.TokenList = function (input, url_or_data, settings) {
     }    
     if(li_data && li_data.length) {
         $.each(li_data, function (index, value) {
-            insert_token(value.id, value.name);
+            insert_token(value.id, value.name, get_free_tabindex());
         });
     }
 
@@ -331,6 +335,23 @@ $.TokenList = function (input, url_or_data, settings) {
     //
     // Private functions
     //
+    
+    function get_free_tabindex() {
+        var i = settings.tabIndexStart;
+        while(true) {
+            var available = true;
+            for (var j=0; j < tabindices.length; j++) {
+                if (i == tabindices[j]) { 
+                    available = false;
+                }
+            }
+            if (available) {
+                return i;
+            }
+            console.log(i);
+            i++;
+        }
+    }
 
     function resize_input() {
         if(input_val === (input_val = input_box.val())) {return;}
@@ -349,10 +370,18 @@ $.TokenList = function (input, url_or_data, settings) {
     }
 
     // Inner function to a token to the list
-    function insert_token(id, value) {
-        var this_token = $("<li><p>"+ value +"</p></li>")
+    function insert_token(id, value, tabindex) {
+        var this_token = $("<li tabindex=\""+ tabindex +"\"><p>"+ value +"</p></li>")
           .addClass(settings.classes.token)
-          .insertBefore(input_token);
+          .insertBefore(input_token)
+          .keydown(function (event) {
+              switch(event.keyCode) {
+                  case KEY.DEL:
+                  case KEY.BACKSPACE:
+                      delete_token($(this));
+                      return false;
+              }
+          });
 
         // The 'delete token' button
         $("<span>" + settings.deleteText + "</span>")
@@ -378,6 +407,8 @@ $.TokenList = function (input, url_or_data, settings) {
         hidden_input.val(token_ids.join(settings.tokenDelimiter));
 
         token_count += 1;
+
+        tabindices.push(tabindex);
 
         return this_token;
     }
@@ -408,7 +439,7 @@ $.TokenList = function (input, url_or_data, settings) {
         }
 
         // Insert the new tokens
-        insert_token(li_data.id, li_data.name);
+        insert_token(li_data.id, li_data.name, get_free_tabindex());
 
         // Check the token limit
         if(settings.tokenLimit !== null && token_count >= settings.tokenLimit) {
