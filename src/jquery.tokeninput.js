@@ -301,6 +301,11 @@ $.TokenList = function (input, url_or_data, settings) {
     var dropdown = $("<div>")
         .addClass(settings.classes.dropdown)
         .appendTo("body")
+        .mousedown(function (event) {
+            if (event.target === $(this).get(0)) {
+                return false;
+            }
+        })
         .hide();
 
     // Magic element to help us resize the text input
@@ -348,7 +353,6 @@ $.TokenList = function (input, url_or_data, settings) {
             if (available) {
                 return i;
             }
-            console.log(i);
             i++;
         }
     }
